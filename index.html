@@ -81,8 +81,15 @@
     border:0; background:none; color:var(--ink-soft); font-size:20px;
     width:32px; height:32px; line-height:1; cursor:pointer; display:none;
   }
-  .chips{display:flex; gap:6px; overflow-x:auto; margin-top:8px; padding-bottom:2px; scrollbar-width:none}
+  .chiprow{display:flex; gap:8px; align-items:center; margin-top:8px}
+  .chips{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; flex:1; min-width:0}
   .chips::-webkit-scrollbar{display:none}
+  #quizBtn{
+    flex:0 0 auto; padding:7px 15px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--sage); background:var(--sage); color:#fff;
+    font-size:13px; font-weight:700; letter-spacing:.03em; white-space:nowrap;
+  }
+  @media (prefers-color-scheme: dark){ #quizBtn{color:#12191B} }
   .chip{
     flex:0 0 auto; padding:7px 13px; border-radius:999px; cursor:pointer;
     border:1px solid var(--rule); background:var(--paper); color:var(--ink-soft);
@@ -155,6 +162,75 @@
   footer{max-width:var(--maxw); margin:0 auto; padding:24px 16px 40px; text-align:center;
     font-size:11.5px; color:var(--ink-soft); line-height:1.7}
   footer a{color:var(--sage-dk)}
+
+  /* ---------- quiz ---------- */
+  #quiz{display:none; position:fixed; inset:0; z-index:50; background:var(--cream); overflow-y:auto}
+  body.quizzing #quiz{display:block}
+  body.quizzing .controls, body.quizzing main, body.quizzing footer, body.quizzing header{display:none}
+  .qwrap{max-width:var(--maxw); margin:0 auto; padding:calc(env(safe-area-inset-top) + 16px) 16px 48px}
+  .qtop{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:4px}
+  .qtop .step{font-size:12px; color:var(--ink-soft); font-weight:600}
+  .qtop button{
+    border:1px solid var(--rule); background:var(--paper); color:var(--ink-soft);
+    border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer;
+  }
+  .bar{height:4px; background:var(--rule); border-radius:99px; overflow:hidden; margin:10px 0 20px}
+  .bar i{display:block; height:100%; background:var(--sage); transition:width .25s}
+
+  .qh{font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--sage-dk);
+    font-weight:700; margin:22px 0 8px}
+  .qh:first-of-type{margin-top:6px}
+  .qtitle{font-size:26px; font-weight:700; letter-spacing:-.02em; margin:0 0 6px}
+  .qlead{font-size:14.5px; color:var(--ink-soft); margin:0 0 4px; line-height:1.6}
+  .opts{display:flex; flex-wrap:wrap; gap:8px}
+  .opt{
+    padding:11px 16px; border-radius:10px; border:1px solid var(--rule);
+    background:var(--paper); color:var(--ink); font-size:15px; cursor:pointer; text-align:left;
+  }
+  .opt[aria-pressed="true"]{border-color:var(--sage); background:var(--sage); color:#fff; font-weight:600}
+  @media (prefers-color-scheme: dark){ .opt[aria-pressed="true"]{color:#12191B} }
+  .opts.stack{flex-direction:column}
+  .opts.stack .opt{width:100%}
+
+  .qprompt{font-size:20px; font-weight:700; line-height:1.4; margin:0 0 4px}
+  .qsub{font-size:14px; color:var(--ink-soft); margin:0 0 16px; line-height:1.6}
+  .qsub b{color:var(--ink)}
+  .qhint{font-size:12px; color:var(--ink-soft); margin:-8px 0 14px; font-style:italic}
+
+  .opt.correct{border-color:#2E7D53; background:#E6F4EC; color:#1B5236; font-weight:600}
+  .opt.wrong{border-color:var(--alert); background:var(--alert-bg); color:var(--alert); font-weight:600}
+  .opt.missed{border-color:#2E7D53; border-style:dashed; color:#2E7D53}
+  @media (prefers-color-scheme: dark){
+    .opt.correct{background:#173226; color:#8FD3AC; border-color:#2E7D53}
+    .opt.missed{color:#8FD3AC}
+  }
+  .opt[disabled]{cursor:default}
+
+  .verdict{margin-top:18px; padding:14px; border-radius:10px; font-size:14.5px; line-height:1.6}
+  .verdict.ok{background:#E6F4EC; color:#1B5236}
+  .verdict.no{background:var(--alert-bg); color:var(--alert)}
+  @media (prefers-color-scheme: dark){ .verdict.ok{background:#173226; color:#8FD3AC} }
+  .verdict .src{display:block; margin-top:6px; font-size:12.5px; opacity:.85}
+
+  .qbtn{
+    display:block; width:100%; margin-top:20px; padding:15px; border:0; border-radius:11px;
+    background:var(--sage); color:#fff; font-size:16px; font-weight:700; cursor:pointer;
+  }
+  @media (prefers-color-scheme: dark){ .qbtn{color:#12191B} }
+  .qbtn.ghost{background:var(--paper); color:var(--ink-soft); border:1px solid var(--rule); font-weight:600; margin-top:10px}
+
+  .score{text-align:center; padding:20px 0 6px}
+  .score .big{font-size:56px; font-weight:800; letter-spacing:-.03em; line-height:1}
+  .score .of{font-size:15px; color:var(--ink-soft); margin-top:6px}
+  .score .verdictline{font-size:16px; margin-top:14px; font-weight:600}
+
+  .review{margin-top:26px}
+  .rev{background:var(--paper); border:1px solid var(--rule); border-left:4px solid var(--alert);
+    border-radius:10px; padding:13px 14px; margin:10px 0}
+  .rev .p{font-size:15px; font-weight:600; margin:0 0 6px}
+  .rev .a{font-size:14px; margin:0; color:var(--ink-soft)}
+  .rev .a b{color:#2E7D53}
+  @media (prefers-color-scheme: dark){ .rev .a b{color:#8FD3AC} }
 </style>
 </head>
 <body>
@@ -170,7 +246,10 @@
            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <button id="clear" aria-label="Clear search">&times;</button>
   </div>
-  <div class="chips" id="chips"></div>
+  <div class="chiprow">
+    <div class="chips" id="chips"></div>
+    <button id="quizBtn">Quiz me</button>
+  </div>
 </div>
 
 <main>
@@ -185,6 +264,8 @@
   1921 Mount Dora — internal reference for service staff.<br>
   Edited by management in the Menu Descriptions sheet; this page follows it automatically.
 </footer>
+
+<div id="quiz"><div class="qwrap" id="qwrap"></div></div>
 
 <script>
 /* ============================================================
@@ -526,6 +607,358 @@ $('#clear').addEventListener('click', () => {
   qBox.value = ''; query = ''; $('#clear').style.display = 'none'; render(); qBox.focus();
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+
+/* ============================================================
+   QUIZ
+   Questions are generated from the sheet itself, so they stay
+   correct as the menus change. Rules:
+     - CHEF TO VERIFY rows are skipped entirely
+     - archived dishes are never quizzed
+     - wrong answers are drawn from the same pool, so they're
+       plausible rather than obviously silly
+   ============================================================ */
+
+const qw = $('#qwrap');
+let QUIZ = null;
+
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0; [a[i],a[j]]=[a[j],a[i]];} return a; };
+const pick  = a => a[(Math.random()*a.length)|0];
+const sample= (a,n) => shuffle(a).slice(0,n);
+
+/* A Definitions cell can hold several "Term: meaning." pairs. Split them. */
+function parseDefs(cell){
+  if (!cell) return [];
+  const re = /([A-ZÉÀ][A-Za-zÀ-ÿ'’\- ]{1,38}?):\s+/g;
+  const marks = [];
+  let m; while ((m = re.exec(cell))) marks.push({ term: m[1].trim(), from: m.index, to: re.lastIndex });
+  if (!marks.length) return [];
+  return marks.map((mk, i) => ({
+    term: mk.term,
+    def : cell.slice(mk.to, i+1 < marks.length ? marks[i+1].from : cell.length).trim().replace(/\s+/g,' ')
+  })).filter(d => d.term.length > 2 && d.def.length > 12);
+}
+
+/* eligible rows for a given scope */
+function quizPool(scope){
+  return ROWS.filter(r => {
+    if (r.archived || r.verify) return false;         // never quiz unverified or off-menu
+    if (scope === 'All')   return true;
+    return r.menu === scope;
+  });
+}
+
+const ALL_ALLERGEN_NAMES = ALLERGENS.map(a => a[1]);
+
+/* ---- question builders. each returns null if it can't make a fair one ---- */
+
+function qAllergen(pool){
+  const cands = pool.filter(r => !r.isRef && r.chips.length && !r.chips.includes('Ask Kitchen'));
+  if (cands.length < 2) return null;
+  const r = pick(cands);
+  const right = r.chips.filter(c => c !== 'Ask Kitchen');
+  const wrong = sample(ALL_ALLERGEN_NAMES.filter(a => !right.includes(a)), Math.max(2, 6 - right.length));
+  if (!right.length || !wrong.length) return null;
+  return {
+    type:'Allergens',
+    prompt:'Which of these are in the ' + r.item + '?',
+    sub:r.line,
+    hint:'Check all that apply.',
+    options: shuffle([...right, ...wrong]),
+    correct: right,
+    multi:true,
+    source:'Sheet says: ' + (r.allerg || '—')
+  };
+}
+
+function qDefinition(pool){
+  const defs = [];
+  pool.forEach(r => parseDefs(r.defs).forEach(d => defs.push({ ...d, item:r.item })));
+  const uniq = [];
+  defs.forEach(d => { if (!uniq.some(u => u.term.toLowerCase() === d.term.toLowerCase())) uniq.push(d); });
+  if (uniq.length < 4) return null;
+  const r = pick(uniq);
+  const wrong = sample(uniq.filter(u => u.term !== r.term), 3).map(u => u.def);
+  return {
+    type:'Definitions',
+    prompt:'A guest asks what ' + r.term.toLowerCase() + ' is. What do you tell them?',
+    sub:'',
+    options: shuffle([r.def, ...wrong]),
+    correct:[r.def],
+    multi:false,
+    stack:true,
+    source:'On the ' + r.item + '.'
+  };
+}
+
+function qFarmDish(pool){
+  const cands = pool.filter(r => !r.isRef && r.farm && r.farm.length > 6 && !/confirm|rotating|see /i.test(r.farm));
+  const others = ROWS.filter(r => !r.isRef && r.farm && r.farm.length > 6);
+  if (cands.length < 1 || others.length < 4) return null;
+  const r = pick(cands);
+  const wrong = sample(others.filter(o => o.farm !== r.farm).map(o => o.farm), 3);
+  if (wrong.length < 3) return null;
+  return {
+    type:'Sourcing',
+    prompt:'Where does the ' + r.item + ' come from?',
+    sub:r.line,
+    options: shuffle([r.farm, ...wrong]),
+    correct:[r.farm],
+    multi:false,
+    stack:true,
+    source:'From the ' + r.menu + ' menu.'
+  };
+}
+
+function qFarmWhat(pool){
+  // Skip farms whose line is just "Produce" — several say the same thing,
+  // which makes for an unfair question.
+  const farms = ROWS.filter(r => r.isRef && r.made && r.made.length > 12
+                            && !/^(local\s+)?produce\.?$/i.test(r.made.trim()));
+  if (farms.length < 4) return null;
+  const r = pick(farms);
+  const wrong = sample(farms.filter(f => f.item !== r.item).map(f => f.made), 3);
+  const askLocation = Math.random() < 0.35 && r.line && !/confirm|program/i.test(r.line);
+  if (askLocation){
+    const locs = [...new Set(farms.map(f => f.line).filter(l => l && !/confirm|program/i.test(l)))];
+    if (locs.length < 4) return null;
+    return {
+      type:'Sourcing',
+      prompt:'Where is ' + r.item + '?',
+      sub:'', options: shuffle([r.line, ...sample(locs.filter(l => l !== r.line), 3)]),
+      correct:[r.line], multi:false, stack:true,
+      source:'We get: ' + r.made
+    };
+  }
+  return {
+    type:'Sourcing',
+    prompt:'What do we get from ' + r.item + '?',
+    sub:'', options: shuffle([r.made, ...wrong]),
+    correct:[r.made], multi:false, stack:true,
+    source:r.line ? r.item + ' — ' + r.line : ''
+  };
+}
+
+function qNameDish(pool){
+  const cands = pool.filter(r => !r.isRef && r.made && r.made.length > 55);
+  if (cands.length < 4) return null;
+  const r = pick(cands);
+  // scrub the dish's own name out of the description so it isn't a giveaway
+  let text = r.made;
+  r.item.split(/[\s&]+/).filter(w => w.length > 3).forEach(w => {
+    text = text.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'ig'), '—');
+  });
+  text = text.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ');
+  const wrong = sample(pool.filter(o => !o.isRef && o.item !== r.item).map(o => o.item), 3);
+  if (wrong.length < 3) return null;
+  return {
+    type:'Name the dish',
+    prompt:'Which dish is this?',
+    sub:text,
+    options: shuffle([r.item, ...wrong]),
+    correct:[r.item],
+    multi:false,
+    stack:true,
+    source:r.line
+  };
+}
+
+function qWhichMenu(pool){
+  const menus = ['Dinner','Happy Hour','Dessert'];
+  const cands = ROWS.filter(r => !r.isRef && !r.archived && !r.verify && menus.includes(r.menu));
+  if (cands.length < 4) return null;
+  const r = pick(cands);
+  return {
+    type:'Menus',
+    prompt:'Which menu is the ' + r.item + ' on?',
+    sub:'',
+    options: menus,
+    correct:[r.menu],
+    multi:false,
+    source:r.line
+  };
+}
+
+/* Which builders apply depends on the scope. Asking "what do we get from
+   Alan Benton?" inside a Dinner quiz is off-topic, and "which menu is this
+   on?" is a freebie once you've already picked a menu. */
+function buildersFor(scope){
+  if (scope === 'Farms & Purveyors') return [[qFarmWhat, 1]];
+  const base = [[qAllergen, 3], [qDefinition, 3], [qNameDish, 3], [qFarmDish, 2]];
+  if (scope === 'All') return [...base, [qFarmWhat, 1], [qWhichMenu, 1]];
+  return base;
+}
+
+function buildQuiz(scope, n){
+  const pool = quizPool(scope);
+  const weighted = [];
+  buildersFor(scope).forEach(([fn, w]) => { for (let i=0;i<w;i++) weighted.push(fn); });
+  const out = [], seen = new Set();
+  let guard = 0;
+  while (out.length < n && guard++ < n * 80){
+    const q = pick(weighted)(pool);
+    if (!q) continue;
+    if (new Set(q.options).size !== q.options.length) continue;   // no duplicate choices
+    // Some prompts are constant ("Which dish is this?"), so the answer has to
+    // be part of the key or only one of them ever makes it into a quiz.
+    const key = q.prompt + '||' + q.correct.join(',');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(q);
+  }
+  return out;
+}
+
+/* ---- screens ---- */
+function quizHome(){
+  const scopes = ['All', ...MENU_ORDER.filter(m => m !== 'Archive' && ROWS.some(r => r.menu === m))];
+  qw.innerHTML = `
+    <div class="qtop"><span class="step">Study mode</span><button id="qx">Close</button></div>
+    <h1 class="qtitle">Quiz me</h1>
+    <p class="qlead">Questions are built from the menu guide itself, so they're always current.
+       Anything the kitchen hasn't confirmed is left out.</p>
+    <div class="qh">How many questions</div>
+    <div class="opts" id="qn">
+      ${[5,10,20,30].map((n,i)=>`<button class="opt" data-n="${n}" aria-pressed="${i===1}">${n}</button>`).join('')}
+    </div>
+    <div class="qh">What to study</div>
+    <div class="opts" id="qs">
+      ${scopes.map((s,i)=>`<button class="opt" data-s="${esc(s)}" aria-pressed="${i===0}">${esc(s)}</button>`).join('')}
+    </div>
+    <button class="qbtn" id="qgo">Start</button>`;
+  const one = (wrap, sel) => {
+    $(wrap).addEventListener('click', e => {
+      const b = e.target.closest('.opt'); if (!b) return;
+      [...$(wrap).children].forEach(c => c.setAttribute('aria-pressed', c === b));
+    });
+  };
+  one('#qn'); one('#qs');
+  $('#qx').onclick = closeQuiz;
+  $('#qgo').onclick = () => {
+    const n = +$('#qn [aria-pressed="true"]').dataset.n;
+    const s = $('#qs [aria-pressed="true"]').dataset.s;
+    const qs = buildQuiz(s, n);
+    if (qs.length < 3){
+      alert('Not enough confirmed material in "' + s + '" to build a quiz yet. Try All.');
+      return;
+    }
+    QUIZ = { qs, i:0, score:0, scope:s, asked:n, misses:[], answered:false, picked:[] };
+    renderQ();
+  };
+}
+
+function renderQ(){
+  const { qs, i } = QUIZ;
+  const q = qs[i];
+  QUIZ.answered = false; QUIZ.picked = [];
+  qw.innerHTML = `
+    <div class="qtop">
+      <span class="step">${i+1} of ${qs.length} · ${esc(q.type)}</span>
+      <button id="qx">Quit</button>
+    </div>
+    <div class="bar"><i style="width:${(i/qs.length)*100}%"></i></div>
+    <p class="qprompt">${esc(q.prompt)}</p>
+    ${q.sub ? `<p class="qsub">${esc(q.sub)}</p>` : ''}
+    ${q.hint ? `<p class="qhint">${esc(q.hint)}</p>` : ''}
+    <div class="opts ${q.stack||q.multi ? 'stack':''}" id="qo">
+      ${q.options.map(o=>`<button class="opt" data-v="${esc(o)}" aria-pressed="false">${esc(o)}</button>`).join('')}
+    </div>
+    <div id="qafter"></div>
+    <button class="qbtn" id="qsub">${q.multi ? 'Check answers' : 'Skip'}</button>`;
+  $('#qx').onclick = closeQuiz;
+  $('#qo').addEventListener('click', e => {
+    const b = e.target.closest('.opt'); if (!b || QUIZ.answered) return;
+    if (q.multi){
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true');
+    } else {
+      QUIZ.picked = [b.dataset.v]; grade();
+    }
+  });
+  $('#qsub').onclick = () => {
+    if (QUIZ.answered) return next();
+    if (q.multi){ QUIZ.picked = [...qw.querySelectorAll('#qo .opt[aria-pressed="true"]')].map(b=>b.dataset.v); grade(); }
+    else { QUIZ.picked = []; grade(); }
+  };
+}
+
+function grade(){
+  const q = QUIZ.qs[QUIZ.i];
+  const picked = QUIZ.picked;
+  const right = q.correct.length === picked.length && q.correct.every(c => picked.includes(c));
+  QUIZ.answered = true;
+  if (right) QUIZ.score++; else QUIZ.misses.push({ q, picked });
+
+  qw.querySelectorAll('#qo .opt').forEach(b => {
+    b.disabled = true;
+    b.setAttribute('aria-pressed','false');
+    const isRight = q.correct.includes(b.dataset.v);
+    const wasPicked = picked.includes(b.dataset.v);
+    if (isRight && wasPicked) b.classList.add('correct');
+    else if (isRight)         b.classList.add('missed');
+    else if (wasPicked)       b.classList.add('wrong');
+  });
+
+  $('#qafter').innerHTML = `<div class="verdict ${right?'ok':'no'}">
+    ${right ? 'Right.' : (picked.length ? 'Not quite.' : 'Skipped.')}
+    ${right ? '' : ' The answer is <b>' + q.correct.map(esc).join('</b>, <b>') + '</b>.'}
+    ${q.source ? `<span class="src">${esc(q.source)}</span>` : ''}
+  </div>`;
+  const btn = $('#qsub');
+  btn.textContent = QUIZ.i + 1 < QUIZ.qs.length ? 'Next question' : 'See how you did';
+  btn.scrollIntoView({ block:'nearest' });
+}
+
+function next(){
+  QUIZ.i++;
+  if (QUIZ.i >= QUIZ.qs.length) results(); else renderQ();
+}
+
+function results(){
+  const { score, qs, scope, misses } = QUIZ;
+  const pct = Math.round(score / qs.length * 100);
+  const line = pct === 100 ? 'Perfect. Go teach somebody.'
+             : pct >= 85  ? 'Strong. You can work the floor on this.'
+             : pct >= 70  ? 'Solid, with a few gaps to close.'
+             : pct >= 50  ? 'Worth another pass before service.'
+             : 'Read through the guide, then come back.';
+  qw.innerHTML = `
+    <div class="qtop"><span class="step">${esc(scope)} · ${qs.length} questions</span><button id="qx">Close</button></div>
+    <div class="score">
+      <div class="big">${pct}%</div>
+      <div class="of">${score} of ${qs.length} correct</div>
+      <div class="verdictline">${line}</div>
+      ${QUIZ.asked > qs.length ? `<div class="of" style="margin-top:10px">
+        You asked for ${QUIZ.asked}. ${esc(scope)} only has enough confirmed material
+        for ${qs.length} fair questions right now.</div>` : ''}
+    </div>
+    <button class="qbtn" id="qshare">Share my score</button>
+    <button class="qbtn ghost" id="qagain">Another quiz</button>
+    <button class="qbtn ghost" id="qback">Back to the guide</button>
+    ${misses.length ? `<div class="review"><div class="qh">What to look at again</div>
+      ${misses.map(m=>`<div class="rev">
+        <p class="p">${esc(m.q.prompt)}</p>
+        <p class="a">Answer: <b>${m.q.correct.map(esc).join(', ')}</b>${
+          m.picked.length ? ' · you said ' + m.picked.map(esc).join(', ') : ' · skipped'}</p>
+      </div>`).join('')}</div>` : ''}`;
+  $('#qx').onclick = $('#qback').onclick = closeQuiz;
+  $('#qagain').onclick = quizHome;
+  $('#qshare').onclick = async () => {
+    const txt = `1921 menu quiz — ${scope}: ${score}/${qs.length} (${pct}%)`
+      + (misses.length ? `\nMissed: ${misses.map(m=>m.q.prompt).join(' | ')}` : '\nNo misses.');
+    try{
+      if (navigator.share) await navigator.share({ text: txt });
+      else { await navigator.clipboard.writeText(txt); $('#qshare').textContent = 'Copied — paste it to your manager'; }
+    }catch(e){}
+  };
+  window.scrollTo({ top:0 });
+}
+
+function closeQuiz(){ document.body.classList.remove('quizzing'); QUIZ = null; qw.innerHTML=''; }
+$('#quizBtn').onclick = () => {
+  if (!ROWS.length) return;
+  document.body.classList.add('quizzing');
+  window.scrollTo({ top:0 });
+  quizHome();
+};
 
 load();
 </script>
