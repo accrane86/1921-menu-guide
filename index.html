@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>1921 Menu Guide</title>
+<meta name="description" content="1921 Mount Dora — menu descriptions, allergens and sourcing for service staff.">
+
+<!-- Home-screen icon + standalone app behavior -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="1921 Menu">
+<meta name="theme-color" content="#78918A">
+
+<style>
+  :root{
+    --sage:#78918A;
+    --sage-dk:#5E736D;
+    --cream:#F7F4ED;
+    --paper:#FFFFFF;
+    --ink:#23282A;
+    --ink-soft:#5C6567;
+    --rule:#E2DDD2;
+    --amber:#B3720C;
+    --amber-bg:#FDF3DF;
+    --alert:#A62B25;
+    --alert-bg:#FBEBE9;
+    --shadow:0 1px 2px rgba(35,40,42,.06), 0 6px 18px rgba(35,40,42,.05);
+    --maxw:760px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --sage:#9DB4AD; --sage-dk:#B7C9C3;
+      --cream:#16191A; --paper:#1E2224; --ink:#ECEAE4; --ink-soft:#A2ABAC;
+      --rule:#2E3436;
+      --amber:#E8B860; --amber-bg:#332A16;
+      --alert:#F09189; --alert-bg:#3A1F1D;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.3);
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--cream); color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    padding-bottom:env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    background:var(--sage); color:#fff;
+    padding:calc(env(safe-area-inset-top) + 18px) 16px 14px;
+    text-align:center;
+  }
+  header img{width:132px; height:auto; display:block; margin:0 auto 6px;
+    filter:brightness(0) invert(1); opacity:.96}
+  header .sub{font-size:11px; letter-spacing:.16em; text-transform:uppercase; opacity:.85}
+
+  /* ---------- sticky controls ---------- */
+  .controls{
+    position:sticky; top:0; z-index:20;
+    background:var(--cream);
+    border-bottom:1px solid var(--rule);
+    padding:10px 12px 8px;
+  }
+  .searchwrap{position:relative}
+  #q{
+    width:100%; padding:12px 38px 12px 14px; font-size:16px;
+    border:1px solid var(--rule); border-radius:10px;
+    background:var(--paper); color:var(--ink);
+    -webkit-appearance:none; appearance:none;
+  }
+  #q:focus{outline:none; border-color:var(--sage); box-shadow:0 0 0 3px rgba(120,145,138,.18)}
+  #clear{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    border:0; background:none; color:var(--ink-soft); font-size:20px;
+    width:32px; height:32px; line-height:1; cursor:pointer; display:none;
+  }
+  .chips{display:flex; gap:6px; overflow-x:auto; margin-top:8px; padding-bottom:2px; scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{
+    flex:0 0 auto; padding:7px 13px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--rule); background:var(--paper); color:var(--ink-soft);
+    font-size:13px; white-space:nowrap;
+  }
+  .chip[aria-pressed="true"]{background:var(--sage); border-color:var(--sage); color:#fff; font-weight:600}
+  @media (prefers-color-scheme: dark){ .chip[aria-pressed="true"]{color:#12191B} }
+
+  /* ---------- list ---------- */
+  main{max-width:var(--maxw); margin:0 auto; padding:12px 12px 60px}
+  .status-line{font-size:12px; color:var(--ink-soft); text-align:center; padding:8px 4px 12px}
+  .status-line b{color:var(--ink); font-weight:600}
+
+  .section{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--sage-dk); font-weight:700;
+    padding:22px 4px 8px; border-bottom:1px solid var(--rule); margin-bottom:10px;
+  }
+  .section .note{display:block; font-size:12px; letter-spacing:.01em; text-transform:none;
+    font-weight:400; color:var(--ink-soft); margin-top:4px}
+  .menuhead{
+    font-size:13px; letter-spacing:.14em; text-transform:uppercase; font-weight:700;
+    color:#fff; background:var(--sage); border-radius:8px;
+    padding:9px 12px; margin:26px 0 4px;
+  }
+  @media (prefers-color-scheme: dark){ .menuhead{color:#12191B} }
+  .menuhead:first-child{margin-top:6px}
+  .menuhead .note{display:block; font-size:11px; letter-spacing:.04em; text-transform:none; font-weight:400; opacity:.9; margin-top:2px}
+
+  .card{
+    background:var(--paper); border:1px solid var(--rule); border-radius:12px;
+    margin:8px 0; box-shadow:var(--shadow); overflow:hidden;
+  }
+  .card.verify{border-left:4px solid var(--amber)}
+  .cardhead{
+    display:block; width:100%; text-align:left; background:none; border:0;
+    padding:13px 14px; cursor:pointer; color:inherit; font:inherit;
+  }
+  .name{font-size:18px; font-weight:700; letter-spacing:-.01em; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+  .price{font-size:14px; font-weight:600; color:var(--ink-soft); white-space:nowrap}
+  .line{font-size:13.5px; color:var(--ink-soft); margin-top:3px}
+  .tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:8px}
+  .tag{font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    padding:3px 8px; border-radius:5px; background:var(--alert-bg); color:var(--alert)}
+  .tag.soft{background:var(--cream); color:var(--ink-soft); font-weight:600}
+  .tag.verify{background:var(--amber-bg); color:var(--amber)}
+  @media (prefers-color-scheme: dark){ .tag.soft{background:#262C2E} }
+
+  .body{display:none; padding:0 14px 14px; border-top:1px solid var(--rule); margin-top:2px}
+  .card.open .body{display:block}
+  .card.open .cardhead{padding-bottom:10px}
+  .field{margin-top:12px}
+  .field h4{
+    margin:0 0 3px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--sage-dk); font-weight:700;
+  }
+  .field p{margin:0; font-size:15px; white-space:pre-wrap}
+  .field.allerg p{font-weight:600}
+  .field.allerg h4{color:var(--alert)}
+  .updated{font-size:11px; color:var(--ink-soft); margin-top:14px; padding-top:8px; border-top:1px dashed var(--rule)}
+  mark{background:rgba(255,214,102,.55); color:inherit; border-radius:2px; padding:0 1px}
+  @media (prefers-color-scheme: dark){ mark{background:rgba(232,184,96,.32)} }
+
+  .empty{text-align:center; color:var(--ink-soft); padding:44px 16px; font-size:15px}
+  .err{background:var(--alert-bg); color:var(--alert); border-radius:10px; padding:14px; font-size:14px; margin:12px 0}
+  .banner{
+    background:var(--amber-bg); color:var(--amber); border-radius:10px;
+    padding:11px 13px; font-size:13px; margin:0 0 10px; line-height:1.45;
+  }
+  footer{max-width:var(--maxw); margin:0 auto; padding:24px 16px 40px; text-align:center;
+    font-size:11.5px; color:var(--ink-soft); line-height:1.7}
+  footer a{color:var(--sage-dk)}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="1921 Mount Dora">
+  <div class="sub">Menu Guide</div>
+</header>
+
+<div class="controls">
+  <div class="searchwrap">
+    <input id="q" type="search" placeholder="Search a dish, allergen or farm…"
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button id="clear" aria-label="Clear search">&times;</button>
+  </div>
+  <div class="chips" id="chips"></div>
+</div>
+
+<main>
+  <div class="banner">
+    Never quote allergens off a <b>CHEF TO VERIFY</b> row. If it isn't confirmed, ask the kitchen.
+  </div>
+  <div id="out"><div class="empty">Loading…</div></div>
+  <div class="status-line" id="stat"></div>
+</main>
+
+<footer>
+  1921 Mount Dora — internal reference for service staff.<br>
+  Edited by management in the Menu Descriptions sheet; this page follows it automatically.
+</footer>
+
+<script>
+/* ============================================================
+   CONFIG — the only part you ever need to edit.
+
+   Paste the "Publish to web" CSV link for each Web Feed tab.
+   File ▸ Share ▸ Publish to web ▸ pick the tab ▸ Comma-separated values (.csv)
+
+   To add a list later (wine by the glass, cocktails, etc.):
+   add another object here. Nothing else in this file changes.
+   ============================================================ */
+const FEEDS = [
+  {
+    key:  'dishes',
+    type: 'dishes',
+    // "Web Feed" tab
+    url:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTzVODK1d4z9T7W6pyhNITJGgsFNpgsR6BvJ7vw1fOLi-OEJ4Ughaboh2Wz00VxaHft9vaeIa6mRhYM/pub?gid=1684049218&single=true&output=csv'
+  },
+  {
+    key:  'farms',
+    type: 'farms',
+    label:'Farms & Purveyors',
+    // "Web Feed - Farms" tab
+    url:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTzVODK1d4z9T7W6pyhNITJGgsFNpgsR6BvJ7vw1fOLi-OEJ4Ughaboh2Wz00VxaHft9vaeIa6mRhYM/pub?gid=1269368794&single=true&output=csv'
+  }
+];
+
+/* Order the menu filters appear in. Anything not listed lands at the end. */
+const MENU_ORDER = ['Dinner','Happy Hour','Dessert','Farms & Purveyors','Archive'];
+
+/* ============================================================
+   Nothing below here needs editing.
+   ============================================================ */
+
+const CACHE_KEY = 'menuguide.v1';
+const $ = s => document.querySelector(s);
+const out = $('#out'), stat = $('#stat'), qBox = $('#q');
+let ROWS = [], activeMenu = 'All', query = '';
+
+/* ---------- RFC4180 CSV parser (handles quotes, commas, newlines) ---------- */
+function parseCSV(text){
+  const rows = []; let row = [], f = '', i = 0, inQ = false;
+  text = text.replace(/^﻿/, '');
+  while (i < text.length){
+    const c = text[i];
+    if (inQ){
+      if (c === '"'){
+        if (text[i+1] === '"'){ f += '"'; i += 2; continue; }
+        inQ = false; i++; continue;
+      }
+      f += c; i++; continue;
+    }
+    if (c === '"'){ inQ = true; i++; continue; }
+    if (c === ','){ row.push(f); f = ''; i++; continue; }
+    if (c === '\r'){ i++; continue; }
+    if (c === '\n'){ row.push(f); rows.push(row); row = []; f = ''; i++; continue; }
+    f += c; i++;
+  }
+  if (f.length || row.length){ row.push(f); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+
+/* ---------- allergen chips ---------- */
+const ALLERGENS = [
+  [/\bshellfish|shrimp|oyster|scallop|crab|lobster|cephalopod|octopus\b/i, 'Shellfish'],
+  [/\bfish\b(?!\s*dip\b)|anchov|snapper|grouper|hamachi|wahoo/i,           'Fish'],
+  [/\btree ?nut|nuts?\b|pecan|almond|pistachio|macadamia|hazelnut|cashew|walnut|pine ?nut|marcona/i, 'Tree Nuts'],
+  [/\bpeanut/i,                     'Peanut'],
+  [/\bgluten|wheat|barley|malt\b/i, 'Gluten'],
+  [/\bdairy|milk|cheese|butter|cream\b/i, 'Dairy'],
+  [/\begg\b|eggs\b|mayo/i,          'Egg'],
+  [/\bsoy\b/i,                      'Soy'],
+  [/\bsesame|benne/i,               'Sesame'],
+  [/\bpork|bacon|ham\b|prosciutto/i,'Pork'],
+  [/\bcoconut/i,                    'Coconut'],
+  [/\bgelatin/i,                    'Gelatin'],
+  [/\balcohol|bourbon|brandy|wine\b|cognac/i, 'Alcohol']
+];
+const ASK = /\bask kitchen|verify|varies|depends|confirm\b/i;
+
+function chipsFor(text){
+  if (!text || !text.trim()) return [];
+  const hits = ALLERGENS.filter(([re]) => re.test(text)).map(([, name]) => name);
+  if (ASK.test(text)) hits.push('Ask Kitchen');
+  return [...new Set(hits)];
+}
+
+/* ---------- normalise a feed into row objects ---------- */
+function ingest(feed, table){
+  if (!table.length) return [];
+  const head = table[0].map(h => h.trim().toLowerCase());
+  const col = (...names) => {
+    for (const n of names){
+      const i = head.findIndex(h => h.includes(n));
+      if (i > -1) return i;
+    }
+    return -1;
+  };
+
+  if (feed.type === 'farms'){
+    const cF = col('farm','purveyor'), cL = col('location'), cW = col('what we get','talking');
+    return table.slice(1).map(r => ({
+      menu: feed.label || 'Farms & Purveyors',
+      section: '',
+      item: (r[cF]||'').trim(),
+      line: (r[cL]||'').trim(),
+      made: (r[cW]||'').trim(),
+      defs:'', allerg:'', farm:'', status:'', updated:'',
+      isHead:false, isRef:true
+    })).filter(r => r.item);
+  }
+
+  const c = {
+    menu:   col('menu'),
+    item:   col('item'),
+    line:   col('menu line','as printed'),
+    made:   col("how it's made",'how its made','made'),
+    defs:   col('definition'),
+    allerg: col('allergen'),
+    farm:   col('farm','sourcing'),
+    status: col('status'),
+    updated:col('updated')
+  };
+
+  return table.slice(1).map(r => {
+    const g = k => (c[k] > -1 ? (r[c[k]] || '') : '').trim();
+    const item = g('item');
+    // A merged section banner exports as text in the Item cell with the rest blank.
+    const rest = ['line','made','defs','allerg','farm','status','updated'].map(g).join('');
+    return {
+      menu: g('menu') || 'Menu',
+      item, line: g('line'), made: g('made'), defs: g('defs'),
+      allerg: g('allerg'), farm: g('farm'),
+      status: g('status'), updated: g('updated'),
+      isHead: !!item && !rest
+    };
+  }).filter(r => r.item);
+}
+
+/* carry section banners down onto the dishes beneath them */
+function applySections(rows){
+  let sec = '', secNote = '', menu = '';
+  const outRows = [];
+  for (const r of rows){
+    if (r.menu !== menu){ menu = r.menu; sec = ''; secNote = ''; }
+    if (r.isHead){
+      // "DESSERTS — menu dated 8/17/26"  →  title + note
+      const bits = r.item.split(/\s+—\s+/);
+      sec = bits.shift().trim();
+      secNote = bits.join(' — ').trim();
+      continue;
+    }
+    r.section = sec; r.secNote = secNote;
+    r.chips = chipsFor(r.allerg);
+    r.verify = /verify|needs chef/i.test(r.status);
+    r.archived = /archiv/i.test(r.status);
+    if (r.archived) r.menu = 'Archive';
+    r.hay = [r.item, r.line, r.made, r.defs, r.allerg, r.farm, r.section, r.menu]
+              .join(' ').toLowerCase();
+    // The printed menu line ends in the price, e.g. "… — 45" or "… — 3.5 each".
+    // Pull it out as a badge and drop it from the line so it isn't shown twice.
+    const m = r.line.match(/\s+—\s*\$?([\d.]+)(\s*each)?\s*$/i);
+    if (m){
+      r.price = '$' + m[1] + (m[2] ? ' ea' : '');
+      r.line  = r.line.slice(0, m.index).trim();
+    } else r.price = '';
+    outRows.push(r);
+  }
+  return outRows;
+}
+
+/* ---------- fetch ---------- */
+async function load(){
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached){
+    try{
+      const { rows, at } = JSON.parse(cached);
+      ROWS = rows; render(); setStatus(at, true);
+    }catch(e){}
+  }
+
+  const unset = FEEDS.filter(f => /^PASTE_/.test(f.url));
+  if (unset.length === FEEDS.length){
+    out.innerHTML = '<div class="err"><b>Not connected yet.</b><br>' +
+      'Open <code>index.html</code> and paste the published CSV links into the CONFIG block at the top.</div>';
+    return;
+  }
+
+  try{
+    const parts = await Promise.all(
+      FEEDS.filter(f => !/^PASTE_/.test(f.url)).map(async f => {
+        const res = await fetch(f.url + (f.url.includes('?') ? '&' : '?') + 'cb=' + Date.now());
+        if (!res.ok) throw new Error(f.key + ' → HTTP ' + res.status);
+        return ingest(f, parseCSV(await res.text()));
+      })
+    );
+    ROWS = applySections(parts.flat());
+    const at = Date.now();
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ rows: ROWS, at })); }catch(e){}
+    render(); setStatus(at, false);
+  }catch(err){
+    if (!ROWS.length){
+      out.innerHTML = '<div class="err"><b>Couldn\'t load the menu.</b><br>' +
+        'Check your signal and pull down to refresh.<br><small>' + err.message + '</small></div>';
+    }else{
+      stat.innerHTML = 'Showing your last saved copy — couldn\'t reach the sheet just now.';
+    }
+  }
+}
+
+function setStatus(at, fromCache){
+  const d = new Date(at);
+  const when = d.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ', ' +
+               d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+
+  // Newest date in the sheet's own "Updated" column = how current the content is,
+  // as opposed to when this phone last downloaded it.
+  let newest = 0, label = '';
+  for (const r of ROWS){
+    const m = (r.updated||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+    if (!m) continue;
+    const yr = +m[3] < 100 ? 2000 + +m[3] : +m[3];
+    const t = new Date(yr, +m[1]-1, +m[2]).getTime();
+    if (t > newest){ newest = t; label = r.updated; }
+  }
+
+  stat.innerHTML =
+    (label ? 'Menus current as of <b>' + esc(label) + '</b> · ' : '') +
+    ROWS.filter(r => !r.archived && !r.isRef).length + ' items<br>' +
+    '<span style="opacity:.8">' + (fromCache ? 'saved copy from ' : 'downloaded ') + when + '</span>';
+}
+
+/* ---------- render ---------- */
+const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function hl(s){
+  s = esc(s);
+  if (!query) return s;
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')','ig');
+  return s.replace(re, '<mark>$1</mark>');
+}
+
+function buildChips(){
+  const menus = [...new Set(ROWS.map(r => r.menu))]
+    .sort((a,b) => {
+      const ia = MENU_ORDER.indexOf(a), ib = MENU_ORDER.indexOf(b);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+  const all = ['All', ...menus];
+  const on = query ? 'All' : activeMenu;
+  $('#chips').innerHTML = all.map(m =>
+    `<button class="chip" data-m="${esc(m)}" aria-pressed="${m===on}">${esc(m)}</button>`
+  ).join('');
+}
+
+function render(){
+  buildChips();
+  let rows = ROWS;
+  if (query){
+    rows = ROWS.filter(r => r.hay.includes(query));   // search spans everything
+  } else if (activeMenu !== 'All'){
+    rows = rows.filter(r => r.menu === activeMenu);
+  } else {
+    rows = rows.filter(r => !r.archived && !r.isRef); // All = what's on tonight
+  }
+
+  if (!rows.length){
+    out.innerHTML = '<div class="empty">Nothing matches <b>' + esc(qBox.value) + '</b>.' +
+      '<br><br>Try a farm name, an allergen, or part of the dish.</div>';
+    return;
+  }
+
+  let html = '', lastMenu = null, lastSec = null;
+  for (const r of rows){
+    if (r.menu !== lastMenu){
+      lastMenu = r.menu; lastSec = null;
+      const note = r.menu === 'Archive'
+        ? '<span class="note">Off the menu — kept for when these come back around.</span>' : '';
+      html += `<div class="menuhead">${esc(r.menu)}${note}</div>`;
+    }
+    if (r.section && r.section !== lastSec){
+      lastSec = r.section;
+      html += `<div class="section">${esc(r.section)}` +
+              (r.secNote ? `<span class="note">${esc(r.secNote)}</span>` : '') + `</div>`;
+    }
+    html += card(r);
+  }
+  out.innerHTML = html;
+}
+
+function card(r){
+  const tags = [];
+  if (r.verify) tags.push('<span class="tag verify">Chef to verify</span>');
+  r.chips.forEach(c => tags.push(
+    `<span class="tag${c === 'Ask Kitchen' ? ' soft' : ''}">${esc(c)}</span>`));
+
+  const f = (label, val, cls) => val && val.trim()
+    ? `<div class="field ${cls||''}"><h4>${label}</h4><p>${hl(val)}</p></div>` : '';
+
+  return `<div class="card${r.verify ? ' verify' : ''}">
+    <button class="cardhead">
+      <div class="name">${hl(r.item)}${r.price ? `<span class="price">${esc(r.price)}</span>` : ''}</div>
+      ${r.line ? `<div class="line">${hl(r.line)}</div>` : ''}
+      ${tags.length ? `<div class="tags">${tags.join('')}</div>` : ''}
+    </button>
+    <div class="body">
+      ${f("How it's made & notes", r.made)}
+      ${f('Allergens', r.allerg, 'allerg')}
+      ${f('Worth knowing', r.defs)}
+      ${f('Farm / sourcing', r.farm)}
+      ${r.updated ? `<div class="updated">Sheet updated ${esc(r.updated)}${r.status ? ' · ' + esc(r.status) : ''}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+/* ---------- events ---------- */
+out.addEventListener('click', e => {
+  const h = e.target.closest('.cardhead');
+  if (h) h.parentElement.classList.toggle('open');
+});
+$('#chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip');
+  if (!c) return;
+  activeMenu = c.dataset.m;
+  qBox.value = ''; query = '';
+  $('#clear').style.display = 'none';
+  render();
+  window.scrollTo({ top: 0 });
+});
+let t;
+qBox.addEventListener('input', () => {
+  clearTimeout(t);
+  t = setTimeout(() => {
+    query = qBox.value.trim().toLowerCase();
+    $('#clear').style.display = query ? 'block' : 'none';
+    render();
+  }, 120);
+});
+$('#clear').addEventListener('click', () => {
+  qBox.value = ''; query = ''; $('#clear').style.display = 'none'; render(); qBox.focus();
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+
+load();
+</script>
+</body>
+</html>
