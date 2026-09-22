@@ -290,6 +290,13 @@ const FEEDS = [
     label:'Farms & Purveyors',
     // "Web Feed - Farms" tab
     url:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTzVODK1d4z9T7W6pyhNITJGgsFNpgsR6BvJ7vw1fOLi-OEJ4Ughaboh2Wz00VxaHft9vaeIa6mRhYM/pub?gid=1269368794&single=true&output=csv'
+  },
+  {
+    key:  'quizbank',
+    type: 'quiz',
+    // "Quiz Bank" tab — hand-written questions mixed into every quiz.
+    // Leave as PASTE_ until the tab is published; the quiz works without it.
+    url:  'PASTE_QUIZ_BANK_CSV_URL'
   }
 ];
 
@@ -303,7 +310,7 @@ const MENU_ORDER = ['Dinner','Happy Hour','Dessert','Farms & Purveyors','Archive
 const CACHE_KEY = 'menuguide.v1';
 const $ = s => document.querySelector(s);
 const out = $('#out'), stat = $('#stat'), qBox = $('#q');
-let ROWS = [], activeMenu = 'All', query = '';
+let ROWS = [], QBANK = [], activeMenu = 'All', query = '';
 
 /* ---------- RFC4180 CSV parser (handles quotes, commas, newlines) ---------- */
 function parseCSV(text){
@@ -364,6 +371,25 @@ function ingest(feed, table){
     }
     return -1;
   };
+
+  if (feed.type === 'quiz'){
+    // Columns (by header name, any order): Menu · Question · Correct · Wrong 1 ·
+    // Wrong 2 · Wrong 3 · Explanation · Item · Active
+    // Several right answers → separate them with " | " in Correct (becomes check-all).
+    const cM = col('menu'), cQ = col('question'), cC = col('correct'),
+          cE = col('explan'), cI = col('item'), cA = col('active');
+    const cW = head.map((h,i) => /^wrong/.test(h) ? i : -1).filter(i => i > -1);
+    const g = (r,i) => (i > -1 ? (r[i]||'') : '').trim();
+    return table.slice(1).map(r => ({
+      menu:   g(r,cM) || 'All',
+      prompt: g(r,cQ),
+      correct:g(r,cC).split(/\s*\|\s*/).filter(Boolean),
+      wrong:  cW.map(i => g(r,i)).filter(Boolean),
+      source: g(r,cE),
+      item:   g(r,cI),
+      active: !/^(n|no|off|false|0)$/i.test(g(r,cA))
+    })).filter(q => q.active && q.prompt && q.correct.length && q.wrong.length);
+  }
 
   if (feed.type === 'farms'){
     const cF = col('farm','purveyor'), cL = col('location'), cW = col('what we get','talking');
@@ -442,8 +468,8 @@ async function load(){
   const cached = localStorage.getItem(CACHE_KEY);
   if (cached){
     try{
-      const { rows, at } = JSON.parse(cached);
-      ROWS = rows; render(); setStatus(at, true);
+      const { rows, qbank, at } = JSON.parse(cached);
+      ROWS = rows; QBANK = qbank || []; render(); setStatus(at, true);
     }catch(e){}
   }
 
@@ -457,14 +483,20 @@ async function load(){
   try{
     const parts = await Promise.all(
       FEEDS.filter(f => !/^PASTE_/.test(f.url)).map(async f => {
-        const res = await fetch(f.url + (f.url.includes('?') ? '&' : '?') + 'cb=' + Date.now());
-        if (!res.ok) throw new Error(f.key + ' → HTTP ' + res.status);
-        return ingest(f, parseCSV(await res.text()));
+        try{
+          const res = await fetch(f.url + (f.url.includes('?') ? '&' : '?') + 'cb=' + Date.now());
+          if (!res.ok) throw new Error(f.key + ' → HTTP ' + res.status);
+          return { f, rows: ingest(f, parseCSV(await res.text())) };
+        }catch(e){
+          if (f.type === 'quiz') return { f, rows: QBANK };  // bank failing never blocks the guide
+          throw e;
+        }
       })
     );
-    ROWS = applySections(parts.flat());
+    ROWS  = applySections(parts.filter(p => p.f.type !== 'quiz').flatMap(p => p.rows));
+    QBANK = parts.filter(p => p.f.type === 'quiz').flatMap(p => p.rows);
     const at = Date.now();
-    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ rows: ROWS, at })); }catch(e){}
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ rows: ROWS, qbank: QBANK, at })); }catch(e){}
     render(); setStatus(at, false);
   }catch(err){
     if (!ROWS.length){
@@ -762,19 +794,61 @@ function qNameDish(pool){
   };
 }
 
+/* Same dish on two menus (Burger on Dinner AND Happy Hour at a different
+   price) must count as both. Match on item name or on the printed line
+   (price is already stripped off r.line). */
+const normName = t => (t||'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+function menusFor(r){
+  const menus = ['Dinner','Happy Hour','Dessert'];
+  const hits = ROWS.filter(o => !o.isRef && !o.archived && menus.includes(o.menu) &&
+    (normName(o.item) === normName(r.item) || (r.line && normName(o.line) === normName(r.line))));
+  return { menus: menus.filter(m => hits.some(h => h.menu === m)), hits };
+}
+
 function qWhichMenu(pool){
   const menus = ['Dinner','Happy Hour','Dessert'];
   const cands = ROWS.filter(r => !r.isRef && !r.archived && !r.verify && menus.includes(r.menu));
   if (cands.length < 4) return null;
   const r = pick(cands);
+  const { menus: on, hits } = menusFor(r);
+  const src = hits.length > 1
+    ? hits.map(h => h.menu + (h.price ? ' ' + h.price : '')).join(' · ')
+    : r.line;
   return {
     type:'Menus',
     prompt:'Which menu is the ' + r.item + ' on?',
     sub:'',
+    hint:'Check all that apply.',
     options: menus,
-    correct:[r.menu],
-    multi:false,
-    source:r.line
+    correct: on,
+    multi:true,
+    source: src
+  };
+}
+
+/* ---- hand-written questions from the Quiz Bank tab ----
+   Menu = All/blank → shows up in any quiz; otherwise only that scope.
+   Item filled → the question disappears automatically while that dish is
+   CHEF TO VERIFY or off the menu, same rule as the generated questions. */
+function bankPool(scope){
+  return QBANK.filter(q => {
+    if (!(q.menu === 'All' || scope === 'All' || q.menu === scope)) return false;
+    if (!q.item) return true;
+    return ROWS.some(r => !r.isRef && !r.archived && !r.verify && normName(r.item) === normName(q.item));
+  });
+}
+function bankQuestion(q){
+  const opts = shuffle([...new Set([...q.correct, ...q.wrong])]);
+  return {
+    type:'House',
+    prompt:q.prompt,
+    sub:'',
+    hint: q.correct.length > 1 ? 'Check all that apply.' : '',
+    options: opts,
+    correct: q.correct,
+    multi: q.correct.length > 1,
+    stack: opts.some(o => o.length > 18),
+    source: q.source
   };
 }
 
@@ -790,9 +864,24 @@ function buildersFor(scope){
 
 function buildQuiz(scope, n){
   const pool = quizPool(scope);
-  const weighted = [];
-  buildersFor(scope).forEach(([fn, w]) => { for (let i=0;i<w;i++) weighted.push(fn); });
   const out = [], seen = new Set();
+
+  // At least one Quiz Bank question per 10 asked (5→1, 10→1, 20→2, 30→3).
+  const bank = shuffle(bankPool(scope));
+  const floor = Math.min(bank.length, Math.ceil(n / 10));
+  bank.slice(0, floor).forEach(b => {
+    const q = bankQuestion(b);
+    seen.add(q.prompt + '||' + q.correct.join(','));
+    out.push(q);
+  });
+  // The rest of the bank stays in the random draw alongside the generators.
+  const rest = bank.slice(floor);
+  const qBank = () => rest.length ? bankQuestion(pick(rest)) : null;
+
+  const weighted = [];
+  const builders = buildersFor(scope);
+  if (rest.length) builders.push([qBank, 2]);
+  builders.forEach(([fn, w]) => { for (let i=0;i<w;i++) weighted.push(fn); });
   let guard = 0;
   while (out.length < n && guard++ < n * 80){
     const q = pick(weighted)(pool);
@@ -805,7 +894,7 @@ function buildQuiz(scope, n){
     seen.add(key);
     out.push(q);
   }
-  return out;
+  return shuffle(out);   // so the guaranteed bank questions aren't always first
 }
 
 /* ---- screens ---- */
